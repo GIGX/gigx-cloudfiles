@@ -1,15 +1,14 @@
 <?php
 /*
-Plugin Name: TODO
-Plugin URI: TODO
-Description: TODO
-Version: 1.0
-Author: TODO
-Author URI: TODO
-Author Email: TODO
-License:
+Plugin Name: GIGX Cloudfiles
+Plugin URI: http://gigx.co.uk/plugins/gigx-cloudfiles
+Description: WordPress Rackspace Cloudfiles management plugin
+Version: 0.0.1
+Author: GIGX
+Author URI: http://gigx.co.uk
+License: GPLv2
 
-  Copyright 2012 TODO (email@domain.com)
+  Copyright 2012 GIGX (info@gigx.co.uk)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as 
@@ -26,8 +25,7 @@ License:
   
 */
 
-// TODO: rename this class to a proper name for your plugin
-class PluginName {
+class GIGXCloudfiles {
 	 
 	/*--------------------------------------------*
 	 * Constructor
@@ -38,8 +36,7 @@ class PluginName {
 	 */
 	function __construct() {
 	
-		// TODO: replace "plugin-name-locale" with a unique value for your plugin
-		load_plugin_textdomain( 'plugin-name-locale', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
+		load_plugin_textdomain( 'gigx-cloudfiles', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
 		
 		// Register admin styles and scripts
 		add_action( 'admin_print_styles', array( &$this, 'register_admin_styles' ) );
@@ -63,8 +60,8 @@ class PluginName {
 	     * For more information: 
 	     * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 	     */
-	    add_action( 'TODO', array( $this, 'action_method_name' ) );
-	    add_filter( 'TODO', array( $this, 'filter_method_name' ) );
+	    add_action( 'media_upload_gigx_cloudfiles', array( $this, 'menu_handle' ) ); //media_upload_tabname (as defined in media_menu method)
+	    add_filter( 'media_upload_tabs', array( $this, 'media_menu' ) );    
 
 	} // end constructor
 	
@@ -90,21 +87,17 @@ class PluginName {
 	 * Registers and enqueues admin-specific styles.
 	 */
 	public function register_admin_styles() {
-	
-		// TODO change 'plugin-name' to the name of your plugin
-		wp_register_style( 'plugin-name-admin-styles', plugins_url( 'plugin-name/css/admin.css' ) );
-		wp_enqueue_style( 'plugin-name-admin-styles' );
+		wp_register_style( 'gigx-cloudfiles-admin-styles', plugins_url( 'gigx-cloudfiles/css/admin.css' ) );
+		wp_enqueue_style( 'gigx-cloudfiles-admin-styles' );
 	
 	} // end register_admin_styles
 
 	/**
 	 * Registers and enqueues admin-specific JavaScript.
 	 */	
-	public function register_admin_scripts() {
-	
-		// TODO change 'plugin-name' to the name of your plugin
-		wp_register_script( 'plugin-name-admin-script', plugins_url( 'plugin-name/js/admin.js' ) );
-		wp_enqueue_script( 'plugin-name-admin-script' );
+	public function register_admin_scripts() {	
+		wp_register_script( 'gigx-cloudfiles-admin-script', plugins_url( 'gigx-cloudfiles/js/admin.js' ) );
+		wp_enqueue_script( 'gigx-cloudfiles-admin-script' );
 	
 	} // end register_admin_scripts
 	
@@ -113,9 +106,8 @@ class PluginName {
 	 */
 	public function register_plugin_styles() {
 	
-		// TODO change 'plugin-name' to the name of your plugin
-		wp_register_style( 'plugin-name-plugin-styles', plugins_url( 'plugin-name/css/display.css' ) );
-		wp_enqueue_style( 'plugin-name-plugin-styles' );
+		wp_register_style( 'gigx-cloudfiles-plugin-styles', plugins_url( 'gigx-cloudfiles/css/display.css' ) );
+		wp_enqueue_style( 'gigx-cloudfiles-plugin-styles' );
 	
 	} // end register_plugin_styles
 	
@@ -123,10 +115,8 @@ class PluginName {
 	 * Registers and enqueues plugin-specific scripts.
 	 */
 	public function register_plugin_scripts() {
-	
-		// TODO change 'plugin-name' to the name of your plugin
-		wp_register_script( 'plugin-name-plugin-script', plugins_url( 'plugin-name/js/display.js' ) );
-		wp_enqueue_script( 'plugin-name-plugin-script' );
+		wp_register_script( 'gigx-cloudfiles-plugin-script', plugins_url( 'gigx-cloudfiles/js/display.js' ) );
+		wp_enqueue_script( 'gigx-cloudfiles-plugin-script' );
 	
 	} // end register_plugin_scripts
 	
@@ -142,9 +132,22 @@ class PluginName {
 	 *		  Action Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
 	 *
 	 */
-	function action_method_name() {
-    	// TODO define your action method here
-	} // end action_method_name
+
+        /**
+         * This holds the tab content.
+         * Must start with media, otherwise css won't get loaded
+         */
+        function media_process() {
+            media_upload_header();
+            echo 'hello';
+        }
+        /**
+         * this points to the content of the tab
+         *
+         */
+        function menu_handle() {
+	    return wp_iframe( array( &$this, 'media_process' ));
+        }
 	
 	/**
 	 * Note:  Filters are points of execution in which WordPress modifies data
@@ -157,8 +160,18 @@ class PluginName {
 	function filter_method_name() {
 	    // TODO define your filter method here
 	} // end filter_method_name
+        /**
+         * adds new tab to media uploader
+         * see http://axcoto.com/blog/article/tag/media_upload_tabs
+         */
+        function media_menu($tabs) {
+            $newtab = array('gigx-cloudfiles' => __('GIGX Cloudfiles', 'gigx_cloudfiles'));// tabname: gigx-cloudfiles
+            return array_merge($tabs, $newtab);
+        }
+        
+        
   
 } // end class
 
 // TODO: update the instantiation call of your plugin to the name given at the class definition
-new PluginName();
+new GIGXCloudfiles();
